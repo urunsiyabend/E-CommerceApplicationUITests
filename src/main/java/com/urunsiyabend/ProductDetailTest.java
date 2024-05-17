@@ -11,6 +11,8 @@ import org.openqa.selenium.chrome.ChromeDriver;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ProductDetailTest {
     public WebDriver driver;
@@ -20,19 +22,34 @@ public class ProductDetailTest {
     public void setUp() {
         driver = new ChromeDriver();
         driver.manage().window().maximize();
-
-        driver.get("https://www.dummyecommercewebsite.com/products/");
-
-        List<WebElement> productLinks = driver.findElements(By.className("product-link"));
-
-        productLinks.get(0).click();
     }
 
     @Test
     public void testProductDetail() {
+        driver.get("https://www.dummyecommercewebsite.com/products/");
+
+        List<WebElement> productLinks = driver.findElements(By.className("product-link"));
+
+        int productId = Integer.parseInt(productLinks.get(0).getAttribute("data-product-id"));
+
+        url = "https://www.dummyecommercewebsite.com/products/" + productId;
+
+        driver.get(url);
+
+        assertEquals(url, driver.getCurrentUrl());
+
         WebElement productDetail = driver.findElement(By.id("product-detail"));
 
         assert productDetail.isDisplayed();
+
+        WebElement productName = productDetail.findElement(By.className("product-name"));
+        assert productName.isDisplayed();
+
+        WebElement productPrice = productDetail.findElement(By.className("product-price"));
+        assert productPrice.isDisplayed();
+
+        WebElement productDescription = productDetail.findElement(By.className("product-description"));
+        assert productDescription.isDisplayed();
     }
 
     @AfterAll
